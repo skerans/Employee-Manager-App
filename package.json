@@ -1,0 +1,27 @@
+{
+  "name": "employee-manager-app",
+  "version": "1.0.0",
+  "description": "An app using Node.js, Inquirer, and MySQL, an interface to view and interact with an employee information database.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skerans/Employee-Manager-App.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/skerans/Employee-Manager-App/issues"
+  },
+  "homepage": "https://github.com/skerans/Employee-Manager-App#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "dotenv": "^16.0.0",
+    "inquirer": "^8.2.1",
+    "mysql2": "^2.3.3"
+  }
+}
