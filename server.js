@@ -90,43 +90,95 @@ function addEmployee() {
   db.query(`SELECT * FROM role`, (err, result) => {
     const roles = result.map((roles) => {
       return {
-        name: roles.name,
-        value: roles.title
+        name: roles.title,
+        value: roles.id
       }
-    })
+    });
 
-    db.query(`SELECT `)
+    db.query(`SELECT CONCAT (first_name, ' ', last_name) AS 'name',
+    id FROM employee WHERE id in (SELECT manager_id FROM employee)`, (err, results) => {
+      const managers = results.map((manager) => {
+        return {
+          name: manager.name,
+          value: manager.id
+        }
+      })
+      inquirer.prompt([
+        {
+          name: 'first',
+          type: 'input',
+          message: `What is the employee's first name?`
+        },
+        {
+          name: 'last',
+          type: 'input',
+          message: `What is the employee's last name?`
+        },
+        {
+          name: 'role',
+          type: 'input',
+          message: `What is the employee's role?`,
+          choices: roles
+        },
+        {
+          name: 'manager',
+          type: 'input',
+          message: `Who is this employee's manager?`,
+          choices: managers
+        }
+      ])
+        .then((answers) => {
+          const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answers.first}', '${answers.last}', '${answers.role}', '${answers.manager}')`;
+          db.query(sql, (err, result) => {
 
-    inquirer.prompt([
-      {
-        name: 'first',
-        type: 'input',
-        message: `What is the employee's first name?`
-      },
-      {
-        name: 'last',
-        type: 'input',
-        message: `What is the employee's last name?`
-      },
-      {
-        name: 'role',
-        type: 'input',
-        message: `What is the employee's role?`,
-        choices: roles
-      },
-      {
-        name: 'first',
-        type: 'input',
-        message: `Who is the employee's manager?`,
-        choices: ''
-      }
-    ])
-  }
-  )
-};
+            mainMenu();
+          })
+        })
+    }
+    )
+  });
+}
 
 function updateEmployee() {
+  const updateSql = `SELECT CONCAT (first_name, ' ', last_name) AS 'name',
+  id FROM employee`;
 
+  db.query(updateSql, (err, result) => {
+
+    const employees = result.map((employees) => {
+      return {
+        value: employees.id,
+        name: employees.name
+      }
+    });
+
+    db.query(`SELECT * FROM role`, (err, data) => {
+      const roles = data.map((roles) => {
+        return {
+          name: roles.title,
+          value: roles.id
+        }
+      })
+      inquirer.prompt([
+        {
+          name: 'employee',
+          type: 'list',
+          message: `Which employee do you want to update?`,
+          choices: employees
+        },
+        {
+          name: 'role',
+          type: 'list',
+          message: `Which role is the new employee being updated to?`,
+          choices: roles
+        }
+      ])
+      .then((answer) => {
+        db.query(`UPDATE employee SET role_id=${answer.role} WHERE id=${answer.employee}`, (err, result));
+        mainMenu();
+      })
+    });
+  });
 };
 
 function viewRoles() {
@@ -171,10 +223,11 @@ function addRole() {
         const sql = `INSERT INTO role (title, salary, department_id) VALUES ('${data.roleTitle}', '${data.roleSalary}', '${data.roleDepartment}')`;
         db.query(sql, (err) => {
           if (err) throw err;
+          mainMenu();
         })
       })
   })
-  mainMenu();
+
 };
 
 function viewDepartments() {
@@ -194,12 +247,12 @@ function addDepartment() {
     }
   ])
     .then(result => {
-      const sql = `INSERT INTO department (department_name) VALUES (${result.addDepartment})`;
-      db.query(sql, result.addDepartment, (err, results) => {
+      const sql = `INSERT INTO department (department_name) VALUES ('${result.addDepartment}')`;
+      db.query(sql, (err, results) => {
         console.log(`added ${result.addDepartment} to departments`);
+        mainMenu();
       })
     });
-  mainMenu();
 };
 
 app.listen(PORT, () => {
@@ -207,3 +260,4 @@ app.listen(PORT, () => {
 });
 
 mainMenu();
+
