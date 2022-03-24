@@ -116,13 +116,13 @@ function addEmployee() {
         },
         {
           name: 'role',
-          type: 'input',
+          type: 'list',
           message: `What is the employee's role?`,
           choices: roles
         },
         {
           name: 'manager',
-          type: 'input',
+          type: 'list',
           message: `Who is this employee's manager?`,
           choices: managers
         }
